@@ -174,6 +174,15 @@ h_err_t PresentationHD44780::write(unsigned char byt) {
 		return 1;
 	}
 
+	switch(byt) {
+		case '\n':
+			cursorRow ++;
+		case '\r':
+			cursorCol = 0;
+			return setCursor(cursorCol, cursorRow);
+		break;
+	}
+
 	auto err = HD44780::write(byt);
 	if(err != HERR_OK) {
 		return err;

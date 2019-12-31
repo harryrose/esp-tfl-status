@@ -26,7 +26,7 @@ void app_main()
 	ESP_LOGI(__FILE__,"Result: %x",err);
 	err = disp->enableBacklight(true);
 	ESP_LOGI(__FILE__,"Result: %x",err);
-	(*disp) << "This is an example of a long string to see what happens.";
+	(*disp) << "This is an example of a long\nstring to see what happens.";
 
     fflush(stdout);
 
