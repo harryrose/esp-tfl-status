@@ -31,7 +31,15 @@ void app_main()
 	ESP_LOGI(__FILE__,"Result: %x",err);
 	err = disp->enableBacklight(true);
 	ESP_LOGI(__FILE__,"Result: %x",err);
-	(*disp) << "Hello world!!!" << 2 << "moo";
+	disp->setCursor(0,0);
+	(*disp) << "A";
+	disp->setCursor(1,1);
+	(*disp) << "B";
+	disp->setCursor(2,2);
+	(*disp) << "C";
+	disp->setCursor(3,3);
+	(*disp) << "D";
+
     fflush(stdout);
     esp_restart();
 }

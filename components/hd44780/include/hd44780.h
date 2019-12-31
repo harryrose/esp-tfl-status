@@ -16,6 +16,11 @@ typedef enum {
 	HD_REG_DATA = 0x01
 } hd_reg_t;
 
+typedef enum {
+	HD_DIR_RTL = 0x00,
+	HD_DIR_LTR = 0x02
+} hd_dir_t;
+
 class Interface {
 public:
 	virtual ~Interface() {};
@@ -33,14 +38,14 @@ public:
 	h_err_t clear();
 	h_err_t home();
 	h_err_t enableBacklight(bool en);
+	h_err_t setCursor(unsigned char col, unsigned char row);
+	h_err_t enableDisplay(bool en);
+	h_err_t enableCursor(bool en);
+	h_err_t enableBlink(bool en);
+	h_err_t setDirection(hd_dir_t dir);
 
 	// from std::streambuf
 	int overflow(int c);
-//	h_err_t SetCursor();
-//	h_err_t EnableDisplay(bool en);
-//	h_err_t EnableCursor(bool en);
-//	h_err_t EnableBlink(bool en);
-//
 private:
 	h_err_t writeDisplayControl();
 	h_err_t writeDisplayMode();

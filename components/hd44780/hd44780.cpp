@@ -94,6 +94,33 @@ h_err_t HD44780::enableBacklight(bool en) {
 	return iface->setBacklight(en);
 }
 
+h_err_t HD44780::enableDisplay(bool en) {
+	if(en){
+		displayControl |= LCD_CTRL_DISPLAY_ON;
+	} else {
+		displayControl &= ~LCD_CTRL_DISPLAY_ON;
+	}
+	return writeDisplayControl();
+}
+
+h_err_t HD44780::enableCursor(bool en) {
+	if(en) {
+		displayControl |= LCD_CTRL_CURSOR_ON;
+	} else {
+		displayControl &= ~LCD_CTRL_CURSOR_ON;
+	}
+	return writeDisplayControl();
+}
+
+h_err_t HD44780::enableBlink(bool en) {
+	if(en){
+		displayControl |= LCD_CTRL_BLINK_ON;
+	} else {
+		displayControl &= ~LCD_CTRL_BLINK_ON;
+	}
+	return writeDisplayControl();
+}
+
 h_err_t HD44780::writeDisplayControl(){
 	return iface->write(HD_REG_CMD, LCD_CMD_DISPLAY_CONTROL | displayControl);
 }
@@ -102,3 +129,16 @@ h_err_t HD44780::writeDisplayMode(){
 	return iface->write(HD_REG_CMD, LCD_CMD_MODE | displayMode);
 }
 
+h_err_t HD44780::setCursor(unsigned char col, unsigned char row) {
+	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 }; // stolen straight from the lcd i2c library
+	return iface->write(HD_REG_CMD, LCD_CMD_SET_DD_RAM_ADDR | (col + row_offsets[row & 0x03]));
+}
+
+h_err_t HD44780::setDirection(hd_dir_t dir) {
+	if(dir == HD_DIR_LTR) {
+		displayMode |= HD_DIR_LTR;
+	} else {
+		displayMode &= ~HD_DIR_LTR;
+	}
+	return writeDisplayMode();
+}
