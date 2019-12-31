@@ -1,7 +1,6 @@
 /*
- * i2c-interface.cpp
+ *	Based on the Arduino library found here: https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
  *
- * Based on the LiquidCrystal_I2C Library for arduino.
  *
  *  Created on: 31 Dec 2019
  *      Author: harry

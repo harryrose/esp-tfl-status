@@ -1,6 +1,5 @@
 /*
- * hd44780.cpp
- *
+ *	Based on the Arduino library found here: https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
  *  Created on: 31 Dec 2019
  *      Author: harry
  */
@@ -177,6 +176,7 @@ h_err_t PresentationHD44780::write(unsigned char byt) {
 	switch(byt) {
 		case '\n':
 			cursorRow ++;
+			// fall through
 		case '\r':
 			cursorCol = 0;
 			return setCursor(cursorCol, cursorRow);
