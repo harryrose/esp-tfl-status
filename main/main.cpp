@@ -19,27 +19,15 @@ extern "C"{
 
 void app_main()
 {
-	 for(int i = 5; i > 0; i--) {
-	    	ESP_LOGI(__FILE__,"Starting in %d seconds", i);
-	    	vTaskDelay(1000/portTICK_PERIOD_MS);
-	    }
-    printf("Hello world!\n");
     ESPI2C *i2c = new ESPI2C(I2C_NUM_0, gpio_num_t(22), gpio_num_t(21), 100000);
     I2CInterface *i2ciface = new I2CInterface(i2c,0x27);
-	HD44780 *disp = new HD44780(i2ciface);
+	HD44780 *disp = new PresentationHD44780(i2ciface,20,4);
 	auto err = disp->begin();
 	ESP_LOGI(__FILE__,"Result: %x",err);
 	err = disp->enableBacklight(true);
 	ESP_LOGI(__FILE__,"Result: %x",err);
-	disp->setCursor(0,0);
-	(*disp) << "A";
-	disp->setCursor(1,1);
-	(*disp) << "B";
-	disp->setCursor(2,2);
-	(*disp) << "C";
-	disp->setCursor(3,3);
-	(*disp) << "D";
+	(*disp) << "This is an example of a long string to see what happens.";
 
     fflush(stdout);
-    esp_restart();
+
 }

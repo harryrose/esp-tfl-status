@@ -43,9 +43,12 @@ HD44780::HD44780(Interface *iface)
 	: std::ostream(this), iface(iface), displayControl(0),displayMode(0){
 }
 
-int HD44780::overflow(int c) {
-	ESP_LOGI(__FILE__, "writing character 0x%x",c);
+h_err_t HD44780::write(unsigned char c) {
 	return iface->write(HD_REG_DATA,(unsigned char) c);
+}
+
+int HD44780::overflow(int c) {
+	return write((unsigned char) c);
 }
 
 h_err_t HD44780::begin(){
@@ -141,4 +144,45 @@ h_err_t HD44780::setDirection(hd_dir_t dir) {
 		displayMode &= ~HD_DIR_LTR;
 	}
 	return writeDisplayMode();
+}
+
+PresentationHD44780::PresentationHD44780(Interface *iface, unsigned char cols, unsigned char rows)
+	: HD44780(iface), cols(cols), rows(rows), cursorCol(0), cursorRow(0) {
+
+}
+
+h_err_t PresentationHD44780::home() {
+	cursorCol = cursorRow = 0;
+	return HERR_OK;
+}
+
+h_err_t PresentationHD44780::setCursor(unsigned char col, unsigned char row) {
+	if(col >= cols || row >= rows) {
+		return 1;
+	}
+
+	auto err = HD44780::setCursor(col, row);
+	if(err == HERR_OK){
+		cursorCol = col;
+		cursorRow = row;
+	}
+	return err;
+}
+
+h_err_t PresentationHD44780::write(unsigned char byt) {
+	if(cursorRow >= rows) {
+		return 1;
+	}
+
+	auto err = HD44780::write(byt);
+	if(err != HERR_OK) {
+		return err;
+	}
+	cursorCol++;
+	if(cursorCol >= cols) {
+		cursorRow ++;
+		cursorCol = 0;
+		setCursor(cursorCol, cursorRow);
+	}
+	return HERR_OK;
 }
