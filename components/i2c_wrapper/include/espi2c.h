@@ -17,9 +17,9 @@ class ESPI2CCommand : public I2CCommand {
 public:
 	ESPI2CCommand(const ESPI2CCommand & c);
 	~ESPI2CCommand();
-	h_err_t Write(unsigned char address, unsigned char * const in, size_t bytes) override;
-	h_err_t Read(unsigned char address, unsigned char * out, size_t bytes) override;
-	h_err_t Execute() override;
+	h_err_t write(unsigned char address, unsigned char * const in, size_t bytes) override;
+	h_err_t read(unsigned char address, unsigned char * out, size_t bytes) override;
+	h_err_t execute() override;
 
 private:
 	ESPI2CCommand(ESPI2C *c, i2c_cmd_handle_t handle);
@@ -33,8 +33,8 @@ class ESPI2C : public I2CBus {
 public:
 	ESPI2C(i2c_port_t i2cNum, gpio_num_t sclPin, gpio_num_t sdaPin, uint32_t frequency);
 	~ESPI2C();
-	I2CCommand *Begin() override;
-	h_err_t Free(I2CCommand *cmd);
+	I2CCommand *begin() override;
+	h_err_t free(I2CCommand *cmd);
 
 private:
 	i2c_port_t port;

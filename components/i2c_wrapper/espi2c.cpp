@@ -38,12 +38,12 @@ ESPI2C::~ESPI2C(){
 	i2c_driver_delete(port);
 }
 
-I2CCommand *ESPI2C::Begin(void) {
+I2CCommand *ESPI2C::begin(void) {
 	ESPI2CCommand *cmd = new ESPI2CCommand(this, i2c_cmd_link_create());
 	return cmd;
 }
 
-h_err_t ESPI2C::Free(I2CCommand *c) {
+h_err_t ESPI2C::free(I2CCommand *c) {
 	if(c) {
 		delete(c);
 	}
@@ -62,7 +62,7 @@ ESPI2CCommand::~ESPI2CCommand(){
 
 }
 
-h_err_t ESPI2CCommand::Write(unsigned char address, unsigned char * const in, size_t bytes) {
+h_err_t ESPI2CCommand::write(unsigned char address, unsigned char * const in, size_t bytes) {
 	if(bytes == 0) {
 		return ESP_OK;
 	}
@@ -72,7 +72,7 @@ h_err_t ESPI2CCommand::Write(unsigned char address, unsigned char * const in, si
 	return ESP_OK;
 }
 
-h_err_t ESPI2CCommand::Read(unsigned char address, unsigned char * out, size_t bytes) {
+h_err_t ESPI2CCommand::read(unsigned char address, unsigned char * out, size_t bytes) {
 	if(bytes == 0){
 		return ESP_OK;
 	}
@@ -82,7 +82,7 @@ h_err_t ESPI2CCommand::Read(unsigned char address, unsigned char * out, size_t b
 	return ESP_OK;
 }
 
-h_err_t ESPI2CCommand::Execute(){
+h_err_t ESPI2CCommand::execute(){
 	i2c_master_stop(cmd);
 	return i2c_master_cmd_begin(iface->port,cmd, 1000 / portTICK_RATE_MS);
 }

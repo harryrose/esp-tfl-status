@@ -16,10 +16,10 @@ class I2CInterface : public Interface {
 public:
 	I2CInterface(I2CBus *i2c, unsigned char addr);
 	~I2CInterface();
-	h_err_t Begin();
-	h_err_t Write(hd_reg_t reg, unsigned char byt) override;
-	h_err_t SetBacklight(bool on) override;
-	bool GetBacklight() override;
+	h_err_t begin();
+	h_err_t write(hd_reg_t reg, unsigned char byt) override;
+	h_err_t setBacklight(bool on) override;
+	bool getBacklight() override;
 
 private:
 	h_err_t write(unsigned char byt);

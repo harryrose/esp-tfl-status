@@ -8,6 +8,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "hd44780.h"
+#include "esp_log.h"
 
 // Commands
 enum {
@@ -16,7 +17,7 @@ enum {
 	LCD_CMD_MODE  = 0x04,
 	LCD_CMD_DISPLAY_CONTROL = 0x08,
 	LCD_CMD_CURSOR_SHIFT = 0x10,
-	LCD_CMD_FUNCTION_SET = 0x20,
+
 	LCD_CMD_SET_CG_RAM_ADDR = 0x40,
 	LCD_CMD_SET_DD_RAM_ADDR = 0x80
 };
@@ -39,59 +40,65 @@ enum {
 };
 
 HD44780::HD44780(Interface *iface)
-	: iface(iface), displayControl(0),displayMode(0){
+	: std::ostream(this), iface(iface), displayControl(0),displayMode(0){
 }
 
+int HD44780::overflow(int c) {
+	ESP_LOGI(__FILE__, "writing character 0x%x",c);
+	return iface->write(HD_REG_DATA,(unsigned char) c);
+}
 
-#define _HD_DELAY_MS(x)
-
-h_err_t HD44780::Begin(){
+h_err_t HD44780::begin(){
 	vTaskDelay(50 / portTICK_PERIOD_MS);
-	auto err = iface->Begin();
+	auto err = iface->begin();
 	if(err != HERR_OK){
+		ESP_LOGE(__FILE__,"error beginning interface. 0x%x. %s",err,esp_err_to_name(err));
 		return err;
 	}
 	displayControl = LCD_CTRL_DISPLAY_ON;
 	err = writeDisplayControl();
 	if(err != HERR_OK){
+		ESP_LOGE(__FILE__,"error writing display control. 0x%x. %s",err,esp_err_to_name(err));
 		return err;
 	}
 
-	err = Clear();
+	err = clear();
 	if(err != HERR_OK){
+		ESP_LOGE(__FILE__,"error clearing display. 0x%x. %s",err,esp_err_to_name(err));
 		return err;
 	}
 
 	displayMode = LCD_ENTRY_LEFT | LCD_ENTRY_SHIFT_DECREMENT;
 	err = writeDisplayMode();
 	if(err != HERR_OK){
+		ESP_LOGE(__FILE__,"error writing display mode. 0x%x. %s",err,esp_err_to_name(err));
 		return err;
 	}
 
-	return Home();
+	return home();
 }
 
-h_err_t HD44780::Clear(){
-	auto err = iface->Write(HD_REG_CMD,LCD_CMD_CLEAR);
-	vTaskDelay(2 / portTICK_PERIOD_MS);
+h_err_t HD44780::clear(){
+	auto err = iface->write(HD_REG_CMD,LCD_CMD_CLEAR);
+	ets_delay_us(2000);
 	return err;
 }
 
-h_err_t HD44780::Home(){
-	auto err = iface->Write(HD_REG_CMD,LCD_CMD_HOME);
-	vTaskDelay(2/portTICK_PERIOD_MS);
+h_err_t HD44780::home(){
+	auto err = iface->write(HD_REG_CMD,LCD_CMD_HOME);
+	ets_delay_us(2000);
 	return err;
 }
 
-h_err_t HD44780::EnableBacklight(bool en) {
-	return iface->SetBacklight(en);
+h_err_t HD44780::enableBacklight(bool en) {
+	return iface->setBacklight(en);
 }
 
 h_err_t HD44780::writeDisplayControl(){
-	return iface->Write(HD_REG_CMD, 0x20 | displayControl);
+	return iface->write(HD_REG_CMD, LCD_CMD_DISPLAY_CONTROL | displayControl);
 }
 
 h_err_t HD44780::writeDisplayMode(){
-	return iface->Write(HD_REG_CMD, LCD_CMD_MODE | displayMode);
+	return iface->write(HD_REG_CMD, LCD_CMD_MODE | displayMode);
 }
 
